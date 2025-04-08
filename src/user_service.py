@@ -1,4 +1,9 @@
 import json
+import logging
+import logging.config
+
+# logging.config.fileConfig('config/logging.conf')
+logger = logging.getLogger(__name__)
 
 class User:
     def __init__(self, id, name, email) -> None:
@@ -52,9 +57,13 @@ def import_data_json(file):
 def export_data_json(data, file='users.json'):
     try:
         with open(file, 'w') as infile:
-            try:
-                json.dump(data, infile)
-            except json.JSONDecodeError:
-                print(f'Error: could not decode JSON in file {file}. The file might be corrupted or empty.')
+            json.dump(data, infile)
+            logger.info(f"Data successfully exported to {file}")
+    except TypeError as e:
+        logger.error(f'Error during JSON export to {file}: Object of type {type(e.args[0]) if e.args else "unknown"} is not JSON serializable.')
+    except OverflowError as e:
+        logger.error(f'Error during JSON export to {file}: Numerical value is too large for JSON representation.')
+    except UnicodeEncodeError as e:
+        logger.error(f'Error during JSON export to {file}: String encoding issue - {e}')
     except Exception as e:
-        print(f'An unexpected error occurred: {e}')
+        logger.error(f'An unexpected error occurred during JSON export to {file}: {e}')
