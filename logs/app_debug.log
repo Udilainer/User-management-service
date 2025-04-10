@@ -1,0 +1,15 @@
+2025-04-10 15:17:44,255 - user_management.User - DEBUG - user_management:__init__:13 - User object created: Alice; id: 1, email: alice@example.com.
+2025-04-10 15:17:44,255 - user_management.User - DEBUG - user_management:__init__:13 - User object created: Bob; id: 2, email: bob@example.com.
+2025-04-10 15:17:44,256 - user_management.UserService - INFO - user_management:__init__:22 - UserService initialized.
+2025-04-10 15:17:44,257 - user_management.UserService - DEBUG - user_management:add_user:26 - Attempting to add user: Alice; id: 1, email: alice@example.com.
+2025-04-10 15:17:44,257 - user_management.UserService - INFO - user_management:add_user:34 - User added: Alice; id: 1, email: alice@example.com.
+2025-04-10 15:17:44,257 - user_management.UserService - DEBUG - user_management:add_user:26 - Attempting to add user: Bob; id: 2, email: bob@example.com.
+2025-04-10 15:17:44,257 - user_management.UserService - INFO - user_management:add_user:34 - User added: Bob; id: 2, email: bob@example.com.
+2025-04-10 15:17:44,258 - user_management.UserService - INFO - user_management:export_users_json:90 - Attempting to export user data to: c:\Users\Genidit\Documents\User_Management_Service\src\..\data/users.json
+2025-04-10 15:17:44,259 - user_management.UserService - INFO - user_management:export_users_json:95 - User data successfully exported to c:\Users\Genidit\Documents\User_Management_Service\src\..\data/users.json
+2025-04-10 15:17:44,261 - user_management.UserService - INFO - user_management:load_users_from_json:50 - Attempting to load user data from: c:\Users\Genidit\Documents\User_Management_Service\src\..\data/users.json
+2025-04-10 15:17:44,283 - user_management.UserService - INFO - user_management:load_users_from_json:55 - Data successfully imported from c:\Users\Genidit\Documents\User_Management_Service\src\..\data/users.json
+2025-04-10 15:17:44,283 - user_management.UserService - DEBUG - user_management:load_users_from_json:62 - Cleared existing user list before loading.
+2025-04-10 15:17:44,284 - user_management.User - DEBUG - user_management:__init__:13 - User object created: Alice; id: 1, email: alice@example.com.
+2025-04-10 15:17:44,284 - user_management.User - DEBUG - user_management:__init__:13 - User object created: Bob; id: 2, email: bob@example.com.
+2025-04-10 15:17:44,284 - user_management.UserService - INFO - user_management:load_users_from_json:78 - 2 user(s) data successfully processed from c:\Users\Genidit\Documents\User_Management_Service\src\..\data/users.json
