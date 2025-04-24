@@ -1,1 +1,10 @@
+.vscode/
+*.log
+logs/
+app_debug.log
+application.log
 temp.py
+.pytest_cache
+__pycache__/
+*.egg-info
+user_management_service.egg-info

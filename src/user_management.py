@@ -38,14 +38,24 @@ class User:
         """
         if not isinstance(id, int):
             raise TypeError(f"User ID must be an integer, got {type(id).__name__}")
+        if not id >= 0:
+            raise ValueError(f"User ID must be a positive integer, got {id}")
         if not isinstance(name, str):
             raise TypeError(f"User name must be a string, got {type(name).__name__}")
         if not name:
             raise ValueError(f"User name cannot be empty")
+        if len(name) < 4:
+            raise ValueError(f"User name length cannot be less than 4, got {len(name)}")
+        if len(name) > 70:
+            raise ValueError(f"User name length cannot be longer than 70, got {len(name)}")
         if not isinstance(email, str):
             raise TypeError(f"User email must be a string, got {type(email).__name__}")
         if not email:
             raise ValueError(f"User email cannot be empty")
+        if len(email) < 6:
+            raise ValueError(f"User email length cannot be less than 6, got {len(email)}")
+        if len(email) > 50:
+            raise ValueError(f"User email length cannot be longer than 50, got {len(email)}")
         email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         if not re.fullmatch(email_regex, email):
             raise ValueError(f"User email has an invalid format: {email}")
