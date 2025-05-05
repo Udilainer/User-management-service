@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import sys
-import re
+from email_validator import validate_email, EmailNotValidError, EmailSyntaxError, EmailUndeliverableError
 
 """Manages user data including loading, saving, and manipulation."""
 
@@ -10,8 +10,12 @@ class DuplicateUserError(ValueError):
     """Exception raised when attempting to add a user with an ID that already exists."""
     pass
 
-class DataFileReadError(IOError):
+class DataFileReadError(OSError):
     """Exception raised for unexpected errors during data file reading."""
+    pass
+
+class DataFileWriteError(OSError):
+    """Exception raised for unexpected erros during data file writing."""
     pass
 
 class User:
@@ -29,41 +33,60 @@ class User:
 
         Args:
             id: The user's unique integer ID.
-            name: The user's non-empty string name.
-            email: The user's non-empty string email in a valid format.
+            name: The user's non-empty string name (min 4, max 70 chars).
+            email: The user's non-empty string email (min 6, max 50 chars) in a valid format.
 
         Raises:
             TypeError: If id, name, or email have incorrect types.
-            ValueError: If name or email are empty, or if email format is invalid.
+            ValueError: If id is not positive, name/email are empty or violate length constraints, 
+                        or if email format is invalid.
         """
+        # --- ID Validation---
         if not isinstance(id, int):
+            User.logger.error(f"Invalid type for User ID: Expected int, got {type(id).__name__}")
             raise TypeError(f"User ID must be an integer, got {type(id).__name__}")
-        if not id >= 0:
+        if id <= 0:
+            User.logger.error(f"Invalid value for User ID: Must be positive, got {id}")
             raise ValueError(f"User ID must be a positive integer, got {id}")
+        
+        # --- Name Validation ---
         if not isinstance(name, str):
+            User.logger.error(f"Invalid type for User name: Expected str, got {type(name).__name__}")
             raise TypeError(f"User name must be a string, got {type(name).__name__}")
-        if not name:
-            raise ValueError(f"User name cannot be empty")
+        if not name.strip():
+            User.logger.error("Invalid value for User name: Cannot be empty or whitespace only")
+            raise ValueError(f"User name cannot be empty or whitespace only")
         if len(name) < 4:
+            User.logger.error(f"Invalid value for User name: Length less than 4, got {len(name)}")
             raise ValueError(f"User name length cannot be less than 4, got {len(name)}")
         if len(name) > 70:
+            User.logger.error(f"Invalid value for User name: Length greater than 70, got {len(name)}")
             raise ValueError(f"User name length cannot be longer than 70, got {len(name)}")
+        
+        # --- Email Validation ---
         if not isinstance(email, str):
+            User.logger.error(f"Invalid type for User email: Expected str, got {type(email).__name__}")
             raise TypeError(f"User email must be a string, got {type(email).__name__}")
-        if not email:
-            raise ValueError(f"User email cannot be empty")
+        if not email.strip():
+            User.logger.error("Invalid value for User email: Cannot be empty or whitespace only")
+            raise ValueError(f"User email cannot be empty or whitespace only")
         if len(email) < 6:
+            User.logger.error(f"Invalid value for User email: Length less than 6, got {len(email)}")
             raise ValueError(f"User email length cannot be less than 6, got {len(email)}")
         if len(email) > 50:
+            User.logger.error(f"Invalid value for User email: Length greater than 50, got {len(email)}")
             raise ValueError(f"User email length cannot be longer than 50, got {len(email)}")
-        email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-        if not re.fullmatch(email_regex, email):
-            raise ValueError(f"User email has an invalid format: {email}")
+        try:
+            validate_email(email, check_deliverability=False)
+            User.logger.debug(f"Email format validated successfully: '{email}'")
+        except EmailNotValidError as e:
+            User.logger.error(f"Invalid format for User email: '{email}'. Details: {e}")
+            raise ValueError(f"User email format is invalid: '{email}'. Details: {e}") from e
         
         self.id = id
         self.name = name
         self.email = email
-        User.logger.debug(f"User object created: {self}")
+        User.logger.debug(f"User object created successfully: ID={self.id}, Name='{self.name}', Email='{self.email}'")
 
     def __str__(self) -> str:
         """Returns a string representation of the User."""
@@ -142,14 +165,14 @@ class UserService:
         Raises:
             FileNotFoundError: If the specified file_path does not exist.
             json.JSONDecodeError: If the file contains invalid JSON.
-            DataFileReadError: For other unexpected errors during file reading.
-            # Note: Add mention if it can raise DuplicateUserError based on implementation
+            DataFileReadError: If an operating system-level error occurs during file reading
+                               (e.g., permission denied, attempting to read a directory).
         """
         UserService.logger.info(f"Attempting to load user data from: {file_path}")
 
         try:
-            with open(file_path, 'r') as outfile:
-                loaded_data = json.load(outfile)
+            with open(file_path, 'r') as infile:
+                loaded_data = json.load(infile)
             UserService.logger.info(f"Raw data successfully loaded from {file_path}")
         except FileNotFoundError as e:
             UserService.logger.error(f'File not found: {file_path}.', exc_info=True)
@@ -157,8 +180,8 @@ class UserService:
         except json.JSONDecodeError as e:
             UserService.logger.error(f'Error decoding JSON in {file_path}: {e}', exc_info=True)
             raise
-        except Exception as e:
-            UserService.logger.error(f"Unexpected error reading file {file_path}: {e}", exc_info=True)
+        except OSError as e:
+            UserService.logger.error(f"File reading OS error during import {file_path}: {e}", exc_info=True)
             raise DataFileReadError(f"Failed to read data file {file_path}") from e
 
         if clear_users_list:
@@ -198,15 +221,18 @@ class UserService:
     def export_users_json(self, file_path='data/users.json') -> None:
         """Exports the current user list to a JSON file.
 
+        Saves user data in JSON format. Catches specific JSON serialization errors
+        and raises a custom DataFileWriteError for underlying OS-level file writing issues.
+
         Args:
             file_path: The path to the JSON file where users will be saved.
 
         Raises:
-            TypeError: If user data is not JSON serializable (shouldn't happen with User).
+            TypeError: If user data is not JSON serializable.
             OverflowError: If numerical data is too large for JSON.
-            UnicodeEncodeError: If there's an issue encoding strings.
-            Exception: For other unexpected errors during file writing or export.
-                      (Consider wrapping this in a custom DataFileWriteError)
+            UnicodeEncodeError: If there's an issue encoding strings for the file.
+            DataFileWriteError: If an operating system-level error occurs during file writing
+                                (e.g., permission denied, disk full, directory doesn't exist).
         """
         UserService.logger.info(f"Attempting to export users data to: {file_path}")
         
@@ -214,21 +240,25 @@ class UserService:
             users_to_export = {user_id: user.__dict__ for user_id, user in self.users_list.items()}
             
             if users_to_export:
-                with open(file_path, 'w') as infile:
-                    json.dump(users_to_export, infile, indent=4)
+                with open(file_path, 'w') as outfile:
+                    json.dump(users_to_export, outfile, indent=4)
                     UserService.logger.info(f"User data successfully exported to {file_path}")
             else:
                 UserService.logger.info(f"No users to export.")
                 
         except TypeError as e:
             UserService.logger.error(f'Error during JSON export to {file_path}: Object of type {type(e).__name__} is not JSON serializable. Details: {e}', exc_info=True)
+            raise
         except OverflowError as e:
             UserService.logger.error(f'Error during JSON export to {file_path}: Numerical value is too large for JSON. Details: {e}', exc_info=True)
+            raise
         except UnicodeEncodeError as e:
             UserService.logger.error(f'Error during JSON export to {file_path}: String encoding issue. Details: {e}', exc_info=True)
-        except Exception as e:
-            UserService.logger.error(f'An unexpected error occurred during export to {file_path}: {e}', exc_info=True)
-
+            raise
+        except OSError as e:
+            UserService.logger.error(f'File writing OS error during export to {file_path}. Details: {e}', exc_info=True)
+            raise DataFileWriteError(f"Failed to write data file {file_path}. Details: {e}") from e
+        
     def __str__(self) -> str:
         """Returns a string representation of the users currently in the service."""
         output_strings = ''

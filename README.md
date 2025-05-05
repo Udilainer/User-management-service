@@ -85,6 +85,7 @@ This project uses `pytest`. Configuration options (`-v`, `-s`) are set in `pytes
 ## Built With
 
 * Python
+* email_validator - For robust email address validation
 * pytest - Testing framework
 * pytest-mock - Mocking library for pytest
 

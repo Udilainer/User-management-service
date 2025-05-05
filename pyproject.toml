@@ -7,12 +7,16 @@ name = "user_management_service"
 version = "0.1.0"
 authors = [{name="Genidit", email="arvilzetta@gmail.com" }]
 description = "A simple user management service with JSON load/export and pytest tests."
-
-[tool.setuptools.packages.find]
-where = ["src"]
+dependencies = [
+    "email_validator>=2.2.0,<3.0.0"
+]
 
 [project.optional-dependencies]
 test = [
     "pytest",
     "pytest-mock",
+    "allure-pytest"
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
