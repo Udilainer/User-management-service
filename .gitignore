@@ -8,3 +8,4 @@ temp.py
 __pycache__/
 *.egg-info
 user_management_service.egg-info
+tests/allure_reports/

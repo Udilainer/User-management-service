@@ -33,12 +33,10 @@ A simple Python project demonstrating user management functionalities, including
     # macOS/Linux:
     # source venv/bin/activate
     ```
-3.  **Install the project in editable mode (includes runtime dependencies):**
+3.  **Install the project in editable mode with test dependencies:**
     ```bash
-    pip install -e .
-    ```
-4.  **Install test dependencies (if needed separately):**
-    ```bash
+    # This installs runtime deps (if any), the project package,
+    # pytest, pytest-mock, and allure-pytest
     pip install -e .[test]
     ```
 
@@ -55,13 +53,29 @@ python src/main.py
 
 ## Running Tests
 
-This project uses `pytest`. Configuration options (`-v`, `-s`) are set in `pytest.ini`.
+This project uses `pytest` and generates detailed report data using Allure.
 
-1.  Ensure test dependencies are installed (e.g., `pip install -e .[test]`).
-2.  Run tests from the project root directory:
+1.  Ensure test dependencies are installed (see Installation section).
+2.  Run tests from the project root directory, generating Allure results:
     ```bash
-    pytest
+    pytest --alluredir=allure-results
     ```
+    *(Test options like `-v` and `-s` are configured in `pytest.ini` and applied automatically)*
+
+## Viewing Test Reports
+
+Test results can be viewed using the Allure Framework's reporting UI.
+
+1.  **Prerequisite: Allure Commandline**
+    You must have the Allure Commandline tool installed to generate the report. Please follow the official installation guide for your operating system:
+    [https://allurereport.org/docs/gettingstarted-installation/](https://allurereport.org/docs/gettingstarted-installation/)
+
+2.  **Generate and View Report**
+    After running the tests using the command above (which creates the `allure-results` directory), execute the following command from your project root:
+    ```bash
+    allure serve allure-results
+    ```
+    This command will generate the HTML report and open it in your default web browser.
 
 ## Project Structure
 
@@ -85,9 +99,10 @@ This project uses `pytest`. Configuration options (`-v`, `-s`) are set in `pytes
 ## Built With
 
 * Python
-* email_validator - For robust email address validation
 * pytest - Testing framework
-* pytest-mock - Mocking library for pytest
+* pytest-mock - Mocking library
+* allure-pytest - For generating Allure report data
+* email-validator - For robust email validation
 
 ## License
 

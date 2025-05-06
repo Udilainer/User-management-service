@@ -15,7 +15,7 @@ class DataFileReadError(OSError):
     pass
 
 class DataFileWriteError(OSError):
-    """Exception raised for unexpected erros during data file writing."""
+    """Exception raised for unexpected errors during data file writing."""
     pass
 
 class User:
