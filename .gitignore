@@ -1,3 +1,4 @@
+.venv
 .vscode/
 *.log
 logs/
@@ -8,4 +9,4 @@ temp.py
 __pycache__/
 *.egg-info
 user_management_service.egg-info
-tests/allure_reports/
+allure-results

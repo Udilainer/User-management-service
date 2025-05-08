@@ -1,55 +1,61 @@
 # User Management Service
 
-A simple Python project demonstrating user management functionalities, including adding, removing, loading from JSON, and exporting to JSON, with comprehensive testing using pytest.
+A simple Python project demonstrating user management functionalities via a REST API (built with FastAPI), including adding, removing, loading from JSON, and exporting to JSON. Features robust validation and comprehensive testing using pytest with Allure reporting.
 
 ## Features
 
-* Add new users with validation (ID, Name, Email).
+* REST API endpoints (`GET`, `POST`, `DELETE`) for user management via FastAPI.
+* Add new users with validation (ID, Name, Email format and constraints) using Pydantic and `email-validator`.
 * Remove users by ID.
-* Load user data from a JSON file, skipping invalid entries.
-* Overwrite existing users when loading conflicting IDs from JSON.
+* Load user data from a JSON file, skipping invalid entries and overwriting duplicates.
 * Export current user list to a JSON file.
-* Configurable logging.
+* Configurable logging via `config/logging.ini`.
 * Comprehensive unit and integration tests using pytest.
+* Detailed test reporting using Allure.
 
 ## Prerequisites
 
 * Python 3.9+
-* pip (Python package installer)
+* pip and venv (standard with Python)
+* Allure Commandline Tool (for viewing reports, see "Viewing Test Reports" section)
 
 ## Installation & Setup
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/Genidit/User-management-service.git
+    git clone <your-repository-url>
     cd User_Management_Service
     ```
-2.  **Create a virtual environment (Recommended):**
+2.  **Create and activate a virtual environment (Recommended):**
     ```bash
     python -m venv venv
-    # Activate the environment
-    # Windows:
-    # .\venv\Scripts\activate
-    # macOS/Linux:
-    # source venv/bin/activate
+    # Windows: .\venv\Scripts\activate
+    # macOS/Linux: source venv/bin/activate
     ```
 3.  **Install the project in editable mode with test dependencies:**
     ```bash
-    # This installs runtime deps (if any), the project package,
-    # pytest, pytest-mock, and allure-pytest
+    # This installs runtime dependencies (fastapi, pydantic, email-validator),
+    # the project package itself, and test dependencies
+    # (pytest, pytest-mock, allure-pytest, uvicorn) defined in pyproject.toml
     pip install -e .[test]
     ```
 
 ## Configuration
 
-* **Logging:** Logging behavior is configured in `config/logging.ini`. Modify this file to change log levels, output destinations (file/console), and formats.
-* **Default Data File:** The default user data file used by `main.py` (if applicable) or default methods is typically `data/users.json`.
+* **Logging:** Logging behavior is configured in `config/logging.ini`. Modify this file to change log levels, output destinations (file/console), and formats. The API service loads this configuration on startup.
+* **Default Data File:** The service attempts to preload user data from `data/users.json` on startup by default (if the file exists).
 
-## Usage
+## Running the API Service
 
-```bash
-python src/main.py
-```
+1.  Ensure your virtual environment is activated and dependencies are installed.
+2.  Run the FastAPI application using Uvicorn from the project root directory:
+    ```bash
+    uvicorn src.api:app --reload
+    ```
+    * `--reload` enables auto-reloading for development. Remove for production deployments.
+3.  The API will typically be available at `http://127.0.0.1:8000`.
+4.  Interactive API documentation (Swagger UI) is available at `http://127.0.0.1:8000/docs`.
+5.  Alternative API documentation (ReDoc) is available at `http://127.0.0.1:8000/redoc`.
 
 ## Running Tests
 
@@ -64,14 +70,17 @@ This project uses `pytest` and generates detailed report data using Allure.
 
 ## Viewing Test Reports
 
-Test results can be viewed using the Allure Framework's reporting UI.
+Test execution generates detailed reports using Allure.
 
-1.  **Prerequisite: Allure Commandline**
+1.  **Generate Allure Results:** Run pytest with the `--alluredir` option:
+    ```bash
+    pytest --alluredir=allure-results
+    ```
+2.  **Prerequisite: Allure Commandline Tool**
     You must have the Allure Commandline tool installed to generate the report. Please follow the official installation guide for your operating system:
     [https://allurereport.org/docs/gettingstarted-installation/](https://allurereport.org/docs/gettingstarted-installation/)
-
-2.  **Generate and View Report**
-    After running the tests using the command above (which creates the `allure-results` directory), execute the following command from your project root:
+3.  **Generate and View Report**
+    After generating the results, execute the following command from your project root:
     ```bash
     allure serve allure-results
     ```
@@ -80,29 +89,35 @@ Test results can be viewed using the Allure Framework's reporting UI.
 ## Project Structure
 
 ```
-├─── config/
-├─── data/
-├─── logs/
-├─── src/
-│    └─── user_management.py
-│    └─── main.py
-├─── tests/
-│    └─── conftest.py
-│    └─── test_user_management.py
-├─── .gitignore
-├─── pyproject.toml
-├─── pytest.ini
-├─── requirements.txt
-└─── README.md
+User_Management_Service/
+├── config/               # Configuration files (logging.ini)
+├── data/                 # Default data files (users.json)
+├── logs/                 # Log output files (ignored by git)
+├── src/                  # Source code
+│   ├── api.py            # FastAPI application and endpoints
+│   ├── models.py         # Pydantic models (or keep in api.py)
+│   ├── user_management.py# Core logic (User class, UserService)
+│   └── init.py
+├── tests/                # Automated tests
+│   ├── conftest.py       # Pytest fixtures
+│   └── test_user_management.py # Test implementation
+├── .gitignore            # Git ignore rules
+├── LICENSE               # Project license file (e.g., MIT)
+├── pyproject.toml        # Project metadata and dependencies (PEP 621)
+├── pytest.ini            # Pytest configuration
+└── README.md             # This file
 ```
 
 ## Built With
 
 * Python
+* FastAPI - Web framework for APIs
+* Pydantic - Data validation and serialization
+* Uvicorn - ASGI server
+* email-validator - Email validation library
 * pytest - Testing framework
 * pytest-mock - Mocking library
-* allure-pytest - For generating Allure report data
-* email-validator - For robust email validation
+* Allure Pytest - Reporting integration
 
 ## License
 
