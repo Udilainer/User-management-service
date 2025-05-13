@@ -93,7 +93,7 @@ class TestUser:
         (55, "Holly Golightly", {'email': "hollygolightly@example.com"}), # Invalid email type
     ])
     def test_user_init_invalid_input_types(self, id, name, email):
-        """Tests user initialization with various invalid input types."""
+        """Tests that user initialization with various invalid input types raise TypeError."""
         logger.debug(f"Starting user initialization test with invalid input type.")
         logger.debug(f"Attempting initialize with ID: {id} (type: {type(id).__name__}), "
                      f"name: {name} (type: {type(name).__name__}), "
@@ -117,7 +117,7 @@ class TestUser:
         (1123, "Kevin McCallister", ""), # Empty email
     ])
     def test_user_init_empty_inputs(self, id, name, email):
-        """Tests user initialization with various empty inputs."""
+        """Tests that user initialization with various empty inputs raise ValueError."""
         logger.debug(f"Starting user initialization test with empty input.")
         logger.debug(f"Attempting initialize with ID='{id}', name='{name}', email='{email}'")
         with pytest.raises(ValueError):
@@ -142,7 +142,7 @@ class TestUser:
         (5876, "Sheldon Cooper", "sheldoncooper@example."), # Email without TLD
     ])
     def test_user_init_invalid_emails(self, valid_id, valid_name, various_invalid_email):
-        """Tests user initialization with various invalid email inputs."""
+        """Tests user initialization with various invalid email inputs raise ValueError."""
         logger.debug(f"Starting user initialization test with invalid email.")
         logger.debug(f"Attempting initialize with ID='{valid_id}', name='{valid_name}', email='{various_invalid_email}'")
         with pytest.raises(ValueError):

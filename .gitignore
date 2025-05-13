@@ -1,5 +1,5 @@
 .venv
-.vscode/
+# .vscode/
 *.log
 logs/
 app_debug.log

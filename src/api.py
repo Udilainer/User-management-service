@@ -8,7 +8,7 @@ from .user_management import (
     User,
     DuplicateUserError,
 )
-from .models import UserResponse, UserCreate
+from .models import HealthStatus, UserResponse, UserCreate
 
 _CONFIG_DIR = os.path.join(os.path.dirname(__file__), '..', 'config')
 _LOGGING_CONFIG_PATH = os.path.join(_CONFIG_DIR, 'logging.ini')
@@ -40,6 +40,18 @@ def get_user_service() -> UserService:
     return user_service_instance
 
 @app.get(
+    "/health",
+    response_model=HealthStatus,
+    status_code=status.HTTP_200_OK,
+    tags=["Health"],
+    summary="Ensure that service is running"
+)
+async def service_health_check():
+    """Returns HTTP_200_OK to ensure that service is successfuly running."""
+    logger.info("Confirming that the service is running.")
+    return {"status": "ok"}
+
+@app.get(
     "/users",
     response_model=List[UserResponse],
     tags=["Users"],
@@ -47,7 +59,7 @@ def get_user_service() -> UserService:
 )
 async def get_all_users(service: UserService = Depends(get_user_service)):
     """Retrieves a list of all users currently in the service."""
-    logger.info("Received request to get all users")
+    logger.info("Received request to get all users.")
     return list(service.users_list.values())
 
 @app.post(

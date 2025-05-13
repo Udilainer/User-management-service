@@ -64,7 +64,7 @@ This project uses `pytest` and generates detailed report data using Allure.
 1.  Ensure test dependencies are installed (see Installation section).
 2.  Run tests from the project root directory, generating Allure results:
     ```bash
-    pytest --alluredir=allure-results
+    python -m pytest --alluredir=allure-results
     ```
     *(Test options like `-v` and `-s` are configured in `pytest.ini` and applied automatically)*
 
@@ -74,7 +74,7 @@ Test execution generates detailed reports using Allure.
 
 1.  **Generate Allure Results:** Run pytest with the `--alluredir` option:
     ```bash
-    pytest --alluredir=allure-results
+    python -m pytest --alluredir=allure-results
     ```
 2.  **Prerequisite: Allure Commandline Tool**
     You must have the Allure Commandline tool installed to generate the report. Please follow the official installation guide for your operating system:

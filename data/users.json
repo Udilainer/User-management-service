@@ -1,12 +1,1 @@
-{
-    "1": {
-        "id": 1,
-        "name": "Alice Hetun",
-        "email": "alice@example.com"
-    },
-    "2": {
-        "id": 2,
-        "name": "Bob Smith",
-        "email": "bob@example.com"
-    }
-}
+{}
