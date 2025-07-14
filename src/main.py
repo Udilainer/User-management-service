@@ -1,15 +1,24 @@
 import logging
 import logging.config
-import os
+from pathlib import Path
 import user_management
 
-script_dir = os.path.dirname(__file__)
-config_file_path = os.path.join(script_dir, '..', 'config', 'logging.ini')
-log_dir = os.path.join(script_dir, '..', 'logs')
-os.makedirs(log_dir, exist_ok=True)
-logging.config.fileConfig(config_file_path, disable_existing_loggers=False)
+script_dir = Path(__file__).parent
+CONFIG_FILE_PATH = script_dir / '..' / 'config' / 'logging.ini'
+if CONFIG_FILE_PATH.exists():
+    logging.config.fileConfig(CONFIG_FILE_PATH, disable_existing_loggers=False)
+else:
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    logging.warning(
+        f"Logging configuration file not found at {CONFIG_FILE_PATH}. "
+        "Using basicConfig."
+    )
 
 logger = logging.getLogger('main_app')
+
 
 def main():
     logger.info("Main application starting.")
@@ -24,7 +33,10 @@ def main():
     user_service.export_users_json()
 
     logger.info("Loading users from JSON...")
-    user_service.load_users_from_json(file_path='data/users.json', clear_users_list=True)
+    user_service.load_users_from_json(
+        file_path='data/users.json',
+        clear_users_list=True
+    )
 
     if user_service.users_list:
         logger.info("User data loaded successfully.")
@@ -33,6 +45,7 @@ def main():
         logger.warning("Failed to load user data from JSON.")
 
     logger.info("Main application finished.")
+
 
 if __name__ == '__main__':
     main()

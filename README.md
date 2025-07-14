@@ -5,12 +5,13 @@ A simple Python project demonstrating user management functionalities via a REST
 ## Features
 
 * REST API endpoints (`GET`, `POST`, `DELETE`) for user management via FastAPI.
-* Add new users with validation (ID, Name, Email format and constraints) using Pydantic and `email-validator`.
+* Add new users with validation (ID, Name, Email format and constraints) using Pydantic.
 * Remove users by ID.
 * Load user data from a JSON file, skipping invalid entries and overwriting duplicates.
 * Export current user list to a JSON file.
 * Configurable logging via `config/logging.ini`.
 * Comprehensive unit and integration tests using pytest.
+* API response validation using custom JSON schemas (for User and User List).
 * Detailed test reporting using Allure.
 
 ## Prerequisites
@@ -67,6 +68,10 @@ This project uses `pytest` and generates detailed report data using Allure.
     python -m pytest --alluredir=allure-results
     ```
     *(Test options like `-v` and `-s` are configured in `pytest.ini` and applied automatically)*
+3.  With the clearing of old Allure Reports (powershell):
+    ```bash
+    Remove-Item -Recurse -Force allure-results; python -m pytest --alluredir=allure-results
+    ```
 
 ## Viewing Test Reports
 
@@ -93,16 +98,22 @@ User_Management_Service/
 ├── config/               # Configuration files (logging.ini)
 ├── data/                 # Default data files (users.json)
 ├── logs/                 # Log output files (ignored by git)
+├── schemas/              # JSON schemas (meta and custom)
+│   ├── user_schema.json  # Schema for a single User object
+│   ├── user_list_schema.json # Schema for a list of User objects
+│   └── meta/             # Meta schema for local validation (draft-07.json)
 ├── src/                  # Source code
 │   ├── api.py            # FastAPI application and endpoints
-│   ├── models.py         # Pydantic models (or keep in api.py)
-│   ├── user_management.py# Core logic (User class, UserService)
+│   ├── models.py         # Pydantic models
+│   ├── user_management.py # Core logic (User class, UserService)
 │   └── init.py
 ├── tests/                # Automated tests
 │   ├── conftest.py       # Pytest fixtures
-│   └── test_user_management.py # Test implementation
+│   ├── utils.py          # Helper functions
+│   ├── test_user_management.py # Test implementation
+│   └── test_api.py       # Test implementation
 ├── .gitignore            # Git ignore rules
-├── LICENSE               # Project license file (e.g., MIT)
+├── LICENSE               # Project license file
 ├── pyproject.toml        # Project metadata and dependencies (PEP 621)
 ├── pytest.ini            # Pytest configuration
 └── README.md             # This file
@@ -114,7 +125,7 @@ User_Management_Service/
 * FastAPI - Web framework for APIs
 * Pydantic - Data validation and serialization
 * Uvicorn - ASGI server
-* email-validator - Email validation library
+* email-validator - Email validation library (for Pydantic)
 * pytest - Testing framework
 * pytest-mock - Mocking library
 * Allure Pytest - Reporting integration

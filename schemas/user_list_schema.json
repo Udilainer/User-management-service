@@ -1,0 +1,34 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "title": "Users List",
+    "description": "Schema for a list of user objects",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "minLength": 3,
+                "description": "The full name of the user"
+            },
+            "email": {
+                "type": "string",
+                "format": "email",
+                "description": "The user's email address, must be a valid email format"
+            },
+            "id": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Unique identifier for the user"
+            }
+        },
+        "required": [
+            "name",
+            "email",
+            "id"
+        ],
+        "additionalProperties": false
+    },
+    "minItems": 0,
+    "uniqueItems": false
+}

@@ -1,5 +1,5 @@
 .venv
-# .vscode/
+.vscode/
 *.log
 logs/
 app_debug.log
@@ -10,3 +10,4 @@ __pycache__/
 *.egg-info
 user_management_service.egg-info
 allure-results
+build/
